@@ -15,5 +15,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy all the application files
 COPY . .
 
-# Run the cron service in the background
-CMD ["cron", "-f"]
+# Add a startup script to run the Python script immediately and then start cron
+COPY startup.sh .
+RUN chmod +x startup.sh
+
+# Run the startup script
+CMD ["/bin/bash", "startup.sh"]
