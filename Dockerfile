@@ -1,0 +1,19 @@
+# Use a more complete base image that includes cron
+FROM python:3.11-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Install cron and add the cron job
+RUN apt-get update && apt-get install -y cron
+RUN (crontab -l 2>/dev/null; echo "0 9 * * * /usr/bin/python3 /app/main.py >> /var/log/cron.log 2>&1") | crontab -
+
+# Copy the requirements file and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy all the application files
+COPY . .
+
+# Run the cron service in the background
+CMD ["cron", "-f"]
