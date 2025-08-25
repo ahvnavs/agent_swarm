@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   sales-api:
     build: ./api_sales
