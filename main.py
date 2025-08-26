@@ -14,7 +14,9 @@ def run_report_generation():
     print("--- Running daily report generation ---")
 
     sales_summary = get_sales_data_and_summary()
+    print("SALES AGENT OUTPUT:", sales_summary)
     marketing_summary = get_marketing_data_and_summary()
+    print("MARKETING AGENT OUTPUT:", marketing_summary)
 
     if "Error:" in sales_summary:
         print("Sales agent failed, providing a fallback message.")
@@ -44,6 +46,16 @@ def run_report_generation():
         msg['Subject'] = "Daily Company Performance Report"
         msg['From'] = sender_email
         msg['To'] = receiver_email
+
+        email_body = (
+        "Hello,\n\n"
+        "Here is the daily performance report for your review.\n\n"
+        "Best regards,\n"
+        "The Agent Swarm System\n\n"
+        "----------------------------------------\n\n"
+        f"{final_report}"
+        )
+        msg.set_content(email_body)
 
         email_content = final_report if final_report else "Report could not be generated."
         msg.set_content(email_content)

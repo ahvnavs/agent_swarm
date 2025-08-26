@@ -1,12 +1,12 @@
-import os # type: ignore
-from transformers import pipeline # type: ignore
+import os
+from transformers import pipeline
 from typing import Any, List, Dict
-import json # type: ignore
-import re # type: ignore
-from .helpers import generate_pdf_report, generate_excel_file # type: ignore
+import json
+import re
+from .helpers import generate_pdf_report, generate_excel_file
 
 try:
-    summarizer: Any = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6") # type: ignore
+    summarizer: Any = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 except Exception as e:
     print(f"Error loading summarization model: {e}")
     summarizer = None
@@ -16,7 +16,7 @@ def generate_final_report(sales_summary: str, marketing_summary: str) -> str:
         return "Error: Hugging Face model failed to load. Cannot generate summary."
 
     tot_prompt = (
-        "TASK: Create a 23-page comprehensive company performance report. "
+        "TASK: Create a comprehensive company performance report. "
         "The report must contain detailed numbers, facts, and figures from the sales and marketing summaries. "
         "Include a current scenario analysis, strategic suggestions, and specific cost-cutting recommendations.\n\n"
         "Raw Sales Summary:\n" + sales_summary + "\n\n"
@@ -35,22 +35,28 @@ def generate_final_report(sales_summary: str, marketing_summary: str) -> str:
         "4. **ACTIONABLE RECOMMENDATIONS:** For each scenario, provide specific, numbered recommendations. "
         "Focus on cost-cutting measures for underperforming areas and investment suggestions for high-performing areas.\n\n"
         
-        "5. **FINAL REPORT DRAFTING:** Combine all the analysis, trends, scenarios, and recommendations into a comprehensive, multi-page report draft. "
-        "Format the report clearly with headings for each section. "
-        "The report must be at least 23 pages long, so be incredibly detailed with all your analysis.\n\n"
+        "5. **FINAL REPORT DRAFTING:** Combine all the analysis, trends, scenarios, and recommendations into a comprehensive report. "
+        "Format the report clearly with headings for each section.\n\n"
         "--- END THINKING PROCESS ---\n\n"
         "FINAL REPORT:"
     )
 
     try:
-        report_text = summarizer(
+        summary_result = summarizer(
             tot_prompt,
-            max_length=4096,
-            min_length=1500,
+            max_length=512,
+            min_length=150,
             do_sample=False,
             truncation=True
-        )[0]['summary_text']
+        )
         
+        # Check if the result is valid before accessing the index
+        if not summary_result or 'summary_text' not in summary_result[0]:
+            raise Exception("Model returned an invalid or empty summary.")
+        
+        report_text = summary_result[0]['summary_text']
+
+        # The rest of the file generation logic remains the same
         excel_data: List[Dict[str, Any]] = [
             {"Metric": "Total Combined Revenue", "Value": "N/A"},
             {"Metric": "Average Daily Ad Spend", "Value": "N/A"},
@@ -63,4 +69,5 @@ def generate_final_report(sales_summary: str, marketing_summary: str) -> str:
         return report_text
     
     except Exception as e:
+        # This will now catch any issues, including the index error
         return f"Error generating final report: {e}"

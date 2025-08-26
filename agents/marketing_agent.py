@@ -18,6 +18,7 @@ def get_marketing_data_and_summary() -> str:
         response = requests.get("http://marketing-api:8002/marketing", timeout=10)
         response.raise_for_status()
         marketing_records = response.json()
+        print("MARKETING AGENT RECEIVED DATA:", marketing_records)
         if not marketing_records:
             return "No marketing data found for the last 24 hours."
         marketing_data_string = "Marketing Records for the last 24 hours:\n"
@@ -40,7 +41,11 @@ def get_marketing_data_and_summary() -> str:
             do_sample=False,
             truncation=True
         )
-        return summary_result[0]['summary_text']
+        if summary_result and 'summary_text' in summary_result[0]:
+            return summary_result[0]['summary_text']
+        else:
+            return "Error: Could not generate a valid summary from the model."
+    
     except requests.exceptions.ConnectionError:
         return "Error: Could not connect to the Marketing API. Is it running? Please check network connection."
     except requests.exceptions.RequestException as e:
