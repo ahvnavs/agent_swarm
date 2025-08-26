@@ -1,10 +1,8 @@
-openai
-fastapi
-uvicorn
-python-dotenv
-requests
-apscheduler
+accelerate
 transformers
 torch
+requests
+apscheduler
 fpdf2
 openpyxl
+python-dotenv

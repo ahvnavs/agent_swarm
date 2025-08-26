@@ -3,7 +3,7 @@ from transformers import pipeline # type: ignore
 from typing import Any, List, Dict
 import json # type: ignore
 import re # type: ignore
-from helpers import generate_pdf_report, generate_excel_file   # type: ignore
+from .helpers import generate_pdf_report, generate_excel_file
 
 try:
     summarizer: Any = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
@@ -51,14 +51,20 @@ def generate_final_report(sales_summary: str, marketing_summary: str) -> str:
             truncation=True
         )[0]['summary_text']
         
+        # This is where the error is happening. We must ensure this list is not empty.
         excel_data: List[Dict[str, Any]] = [
             {"Metric": "Total Combined Revenue", "Value": "N/A"},
             {"Metric": "Average Daily Ad Spend", "Value": "N/A"},
             {"Metric": "Average Daily Conversions", "Value": "N/A"}
         ]
         
+        # Check if the list is populated before calling the function
+        if excel_data:
+            generate_excel_file(excel_data)
+        else:
+            print("No data for Excel file. Skipping Excel generation.")
+        
         generate_pdf_report(report_text)
-        generate_excel_file(excel_data)
         
         return report_text
     
