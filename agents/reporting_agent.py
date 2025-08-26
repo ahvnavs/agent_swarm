@@ -45,8 +45,8 @@ def generate_final_report(sales_summary: str, marketing_summary: str) -> str:
     try:
         report_text = summarizer(
             tot_prompt,
-            max_length=4096,
-            min_length=1500,
+            max_length=1000,
+            min_length=300,
             do_sample=False,
             truncation=True
         )[0]['summary_text']
