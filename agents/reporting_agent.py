@@ -1,28 +1,20 @@
-import os
-from transformers import pipeline
-from typing import Any
-import json
-import re
-from helpers import generate_pdf_report, generate_excel_file # Import helper functions
+import os # type: ignore
+from transformers import pipeline # type: ignore
+from typing import Any, List, Dict
+import json # type: ignore
+import re # type: ignore
+from helpers import generate_pdf_report, generate_excel_file   # type: ignore
 
-# Initialize the Hugging Face summarization pipeline
 try:
-    summarizer: Any = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6") # type: ignore
+    summarizer: Any = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 except Exception as e:
     print(f"Error loading summarization model: {e}")
     summarizer = None
 
 def generate_final_report(sales_summary: str, marketing_summary: str) -> str:
-    """
-    Synthesizes summaries into a multi-page report using a Tree of Thoughts (ToT) approach
-    and generates a PDF and Excel file.
-    """
     if summarizer is None:
         return "Error: Hugging Face model failed to load. Cannot generate summary."
 
-    # Step 1: Simulate a Tree of Thoughts (ToT)
-    # The ToT approach guides the model to explore multiple paths of reasoning
-    # This is done through a structured, multi-step prompt.
     tot_prompt = (
         "TASK: Create a 23-page comprehensive company performance report. "
         "The report must contain detailed numbers, facts, and figures from the sales and marketing summaries. "
@@ -51,31 +43,24 @@ def generate_final_report(sales_summary: str, marketing_summary: str) -> str:
     )
 
     try:
-        # Generate the detailed report using the ToT prompt
         report_text = summarizer(
             tot_prompt,
-            max_length=4096,  # Use a large max_length for a detailed report
-            min_length=1500,  # Min length to enforce detail
+            max_length=4096,
+            min_length=1500,
             do_sample=False,
             truncation=True
         )[0]['summary_text']
         
-        # Step 2: Extract key numbers and metrics for the Excel file
-        # This is a simplified example; a more complex regex could be used
-        excel_data = [
+        excel_data: List[Dict[str, Any]] = [
             {"Metric": "Total Combined Revenue", "Value": "N/A"},
             {"Metric": "Average Daily Ad Spend", "Value": "N/A"},
             {"Metric": "Average Daily Conversions", "Value": "N/A"}
         ]
         
-        # You would use regex or a more robust parsing method here
-        # to extract the numbers from report_text
-        
-        # Step 3: Generate the PDF and Excel files
         generate_pdf_report(report_text)
         generate_excel_file(excel_data)
         
         return report_text
-        
+    
     except Exception as e:
         return f"Error generating final report: {e}"
