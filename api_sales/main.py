@@ -5,8 +5,6 @@ import random
 import datetime
 
 app = FastAPI(title="Sales Mock API")
-
-# Updated Pydantic model with 7 parameters
 class SalesData(BaseModel):
     transaction_id: str
     product_name: str
@@ -18,25 +16,16 @@ class SalesData(BaseModel):
 
 @app.get("/sales", response_model=List[SalesData])
 def get_sales_data() -> List[Dict[str, Any]]:
-    """
-    Mock API endpoint for dynamic sales data, generating 23 records.
-    """
     try:
-        # Explicitly hint the list to resolve the Pylance warning
         sales_records: List[Dict[str, Any]] = []
-        
         product_names = ["Laptop", "Mouse", "Keyboard", "Monitor", "Webcam", "Headphones", "Microphone"]
         customer_regions = ["North", "South", "East", "West", "Central"]
-
-        for i in range(23): # Generate 23 records
+        for i in range(23):
             unit_price = round(random.uniform(50, 1500), 2)
             quantity_sold = random.randint(1, 10)
             total_revenue = round(unit_price * quantity_sold, 2)
-            
-            # Generate a timestamp within the last 24 hours
             time_offset = datetime.timedelta(hours=random.randint(0, 23), minutes=random.randint(0, 59))
             transaction_time = datetime.datetime.now() - time_offset
-
             record: Dict[str, Any] = {
                 "transaction_id": f"TRX{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}{i:02d}{random.randint(100,999)}",
                 "product_name": random.choice(product_names),
@@ -47,9 +36,6 @@ def get_sales_data() -> List[Dict[str, Any]]:
                 "timestamp": transaction_time.isoformat()
             }
             sales_records.append(record)
-            
         return sales_records
-    
     except Exception as e:
-        # Return a 500 Internal Server Error if something goes wrong
         raise HTTPException(status_code=500, detail=f"An internal server error occurred: {e}")
