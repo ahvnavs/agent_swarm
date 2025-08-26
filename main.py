@@ -2,8 +2,9 @@ import os
 import smtplib
 from email.message import EmailMessage
 import time
-from dotenv import load_dotenv # type: ignore
+from dotenv import load_dotenv
 
+# Import the agent functions
 from agents.sales_agent import get_sales_data_and_summary
 from agents.marketing_agent import get_marketing_data_and_summary
 from agents.reporting_agent import generate_final_report
@@ -28,7 +29,7 @@ def run_report_generation():
 
     final_report = generate_final_report(sales_summary, marketing_summary)
 
-    report_path = f"daily_report_{time.strftime('%Y-%m-%d')}.txt"
+    report_path = f"reports/daily_report_{time.strftime('%Y-%m-%d')}.txt"
     if final_report:
         with open(report_path, "w") as f:
             f.write(final_report)
@@ -47,18 +48,39 @@ def run_report_generation():
         msg['From'] = sender_email
         msg['To'] = receiver_email
 
-        email_body = (
-        "Hello,\n\n"
-        "Here is the daily performance report for your review.\n\n"
-        "Best regards,\n"
-        "The Agent Swarm System\n\n"
-        "----------------------------------------\n\n"
-        f"{final_report}"
-        )
+        # Corrected line: use a single `set_content` call with the formatted body
+        if "Error" in final_report:
+            email_body = (
+                "Hello,\n\n"
+                "An error occurred during report generation.\n\n"
+                f"{final_report}\n\n"
+                "Best regards,\n"
+                "The Agent Swarm System"
+            )
+        else:
+            email_body = (
+                "Hello,\n\n"
+                "Here is the daily performance report for your review.\n\n"
+                "Best regards,\n"
+                "The Agent Swarm System\n\n"
+                "----------------------------------------\n\n"
+                f"{final_report}"
+            )
         msg.set_content(email_body)
 
-        email_content = final_report if final_report else "Report could not be generated."
-        msg.set_content(email_content)
+        # Attach the PDF and Excel files
+        pdf_path = f"reports/company_report.pdf"
+        excel_path = f"reports/company_data.xlsx"
+
+        if os.path.exists(pdf_path):
+            with open(pdf_path, 'rb') as f:
+                msg.add_attachment(f.read(), maintype='application', subtype='pdf', filename=os.path.basename(pdf_path))
+            print(f"Attached PDF file: {pdf_path}")
+
+        if os.path.exists(excel_path):
+            with open(excel_path, 'rb') as f:
+                msg.add_attachment(f.read(), maintype='application', subtype='vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename=os.path.basename(excel_path))
+            print(f"Attached Excel file: {excel_path}")
 
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
             smtp.login(sender_email, sender_password)

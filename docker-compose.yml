@@ -5,18 +5,23 @@ services:
       - "8001:8001"
     networks:
       - app-network
+
   marketing-api:
     build: ./api_marketing
     ports:
       - "8002:8002"
     networks:
       - app-network
+
   agent-app:
     build: .
     networks:
       - app-network
     env_file:
       - .env
+    volumes:
+      - ./reports:/app/reports  # <-- ADD THIS LINE
+
 networks:
   app-network:
     driver: bridge

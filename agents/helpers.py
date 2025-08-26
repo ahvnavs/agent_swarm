@@ -1,5 +1,5 @@
-from fpdf import FPDF # type: ignore
-from openpyxl import Workbook # type: ignore
+from fpdf import FPDF
+from openpyxl import Workbook
 import re
 from typing import List, Dict, Any
 
@@ -15,6 +15,7 @@ def generate_pdf_report(report_text: str, filename: str = "company_report.pdf"):
                 pdf.add_page()
             pdf.multi_cell(0, 10, page_content.strip()) # type: ignore
         pdf.output(filename)
+        print(f"PDF report saved to {filename}")
         return True
     except Exception as e:
         print(f"Error generating PDF report: {e}")
@@ -27,12 +28,13 @@ def generate_excel_file(report_details: List[Dict[str, Any]], filename: str = "c
             return False
         wb = Workbook()
         ws = wb.active
-        ws.title = "Report Metrics" # type: ignore
+        ws.title = "Report Metrics"
         headers = list(report_details[0].keys())
-        ws.append(headers) # type: ignore
+        ws.append(headers)
         for row in report_details:
-            ws.append(list(row.values())) # type: ignore
+            ws.append(list(row.values()))
         wb.save(filename)
+        print(f"Excel file saved to {filename}")
         return True
     except Exception as e:
         print(f"Error generating Excel file: {e}")
