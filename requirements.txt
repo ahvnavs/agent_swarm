@@ -1,8 +1,7 @@
 accelerate
 transformers
 torch
+bitsandbytes
 requests
-apscheduler
 fpdf2
 openpyxl
-python-dotenv
