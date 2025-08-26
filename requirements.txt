@@ -1,6 +1,0 @@
-transformers
-torch
-requests
-fpdf2
-openpyxl
-python-dotenv
