@@ -14,11 +14,12 @@ load_dotenv()
 def run_report_generation():
     print("--- Running daily report generation ---")
 
-    # Get the summaries from the specialized agent functions
+    # 1. Get the summaries from the specialized agent functions
     sales_summary = get_sales_data_and_summary()
     marketing_summary = get_marketing_data_and_summary()
 
-    # Explicitly check for errors and provide a fallback message
+    # 2. Explicitly check for errors and provide a fallback message
+    # This prevents a crash if an agent failed
     if "Error:" in sales_summary:
         print("Sales agent failed, providing a fallback message.")
         sales_summary = "Sales data could not be retrieved. The Sales API may be down."
@@ -27,17 +28,18 @@ def run_report_generation():
         print("Marketing agent failed, providing a fallback message.")
         marketing_summary = "Marketing data could not be retrieved. The Marketing API may be down."
 
-    # Generate the final report with the third agent function
+    # 3. Generate the final report, PDF, and Excel file
+    # The generate_final_report function now handles all of this
     final_report = generate_final_report(sales_summary, marketing_summary)
 
-    # Handle a potential None value for final_report before writing
+    # 4. Handle a potential None value for final_report before writing
     report_path = f"daily_report_{time.strftime('%Y-%m-%d')}.txt"
     if final_report:
         with open(report_path, "w") as f:
             f.write(final_report)
         print(f"\nReport saved to {report_path}")
 
-    # Email the report
+    # 5. Email the report
     try:
         sender_email = os.getenv("SENDER_EMAIL")
         sender_password = os.getenv("SENDER_PASSWORD")

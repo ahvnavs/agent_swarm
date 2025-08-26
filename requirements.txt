@@ -3,3 +3,8 @@ fastapi
 uvicorn
 python-dotenv
 requests
+apscheduler
+transformers
+torch
+fpdf2
+openpyxl
