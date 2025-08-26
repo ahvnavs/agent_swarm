@@ -1,20 +1,16 @@
 import os # type: ignore
-import requests
+import requests # type: ignore
 import json
 from transformers import pipeline # type: ignore
 from typing import Any
 
 try:
-    summarizer: Any = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+    summarizer: Any = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6") # type: ignore
 except Exception as e:
     print(f"Error loading summarization model: {e}")
     summarizer = None
 
 def get_sales_data_and_summary() -> str:
-    """
-    Fetches sales records from the Sales API and generates
-    a comprehensive Chain of Thought summary using a Hugging Face model.
-    """
     if summarizer is None:
         return "Error: Hugging Face model failed to load. Cannot generate summary."
     sales_data_string = ""

@@ -1,11 +1,11 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException # type: ignore
+from pydantic import BaseModel # type: ignore
 from typing import List, Dict, Any
 import random
 import datetime
 
-app = FastAPI(title="Marketing Mock API")
-class MarketingData(BaseModel):
+app = FastAPI(title="Marketing Mock API") # type: ignore
+class MarketingData(BaseModel): # type: ignore
     campaign_id: str
     campaign_name: str
     ad_spend: float
@@ -14,7 +14,7 @@ class MarketingData(BaseModel):
     conversions: int
     timestamp: str
 
-@app.get("/marketing", response_model=List[MarketingData])
+@app.get("/marketing", response_model=List[MarketingData]) # type: ignore
 def get_marketing_data() -> List[Dict[str, Any]]:
     try:
         marketing_records: List[Dict[str, Any]] = []

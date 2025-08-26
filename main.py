@@ -2,7 +2,7 @@ import os
 import smtplib
 from email.message import EmailMessage
 import time
-from dotenv import load_dotenv
+from dotenv import load_dotenv # type: ignore
 
 from agents.sales_agent import get_sales_data_and_summary
 from agents.marketing_agent import get_marketing_data_and_summary
