@@ -1,10 +1,12 @@
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from datetime import datetime
 from agents.sales_agent import SalesAgent
 from agents.marketing_agent import MarketingAgent
 from agents.reporting_agent import ReportingAgent
+
+# Add the parent directory of 'main.py' to the Python path.
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def run_report_generation():
     """
@@ -16,23 +18,28 @@ def run_report_generation():
     marketing_agent = MarketingAgent()
     reporting_agent = ReportingAgent()
     
-    sales_summary = sales_agent.get_summary()
-    marketing_summary = marketing_agent.get_summary()
+    # Store the raw data from the API calls
+    sales_data = sales_agent.get_data()
+    marketing_data = marketing_agent.get_data()
+    
+    # Generate summaries using the raw data
+    sales_summary = sales_agent.get_summary(sales_data)
+    marketing_summary = marketing_agent.get_summary(marketing_data)
     
     final_sales_summary = sales_summary
     final_marketing_summary = marketing_summary
     
-    if sales_summary.startswith("Error:"):
+    if isinstance(sales_summary, str) and sales_summary.startswith("Error:"):
         print(f"Warning: Sales agent failed. {sales_summary}")
         final_sales_summary = f"Error fetching sales data. Reason: {sales_summary.split(':', 1)[1].strip()}"
     
-    if marketing_summary.startswith("Error:"):
+    if isinstance(marketing_summary, str) and marketing_summary.startswith("Error:"):
         print(f"Warning: Marketing agent failed. {marketing_summary}")
         final_marketing_summary = f"Error fetching marketing data. Reason: {marketing_summary.split(':', 1)[1].strip()}"
         
     reporting_agent.create_text_report(final_sales_summary, final_marketing_summary)
     reporting_agent.create_pdf_report(final_sales_summary, final_marketing_summary)
-    reporting_agent.create_excel_report()
+    reporting_agent.create_excel_report(sales_data, marketing_data)
     
     print(f"[{datetime.now()}] Daily report generation complete.")
 

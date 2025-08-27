@@ -1,6 +1,7 @@
 import requests
 import os
 from groq import Groq
+import httpx # Import httpx library
 
 class SalesAgent:
     """
@@ -10,34 +11,42 @@ class SalesAgent:
         self.api_url = "http://sales-api:8000/sales"
         self.api_key = os.environ.get("LLM_API_KEY")
 
-        # Explicitly remove proxy environment variables before client initialization.
-        # This fixes the "unexpected keyword argument 'proxies'" error.
         if "http_proxy" in os.environ:
             del os.environ["http_proxy"]
         if "https_proxy" in os.environ:
             del os.environ["https_proxy"]
 
-        self.client = Groq(api_key=self.api_key)
-        self.model_name = "mixtral-8x7b-32768"
+        http_client = httpx.Client(proxies={})
+        self.client = Groq(api_key=self.api_key, http_client=http_client)
+        self.model_name = "llama3-8b-8192"
 
-    def get_summary(self):
-        """Fetches sales data and generates a summary."""
-        if not self.api_key:
-            return "Error: LLM_API_KEY environment variable not set."
-
+    def get_data(self):
+        """Fetches raw data from the sales API."""
         try:
             response = requests.get(self.api_url)
             response.raise_for_status()
-            sales_data = response.json()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return f"Error: Could not retrieve data from sales API. Details: {e}"
+        except Exception as e:
+            return f"Error: An unexpected error occurred in SalesAgent. Details: {e}"
 
+    def get_summary(self, sales_data):
+        """Generates a summary from the provided sales data."""
+        if not self.api_key:
+            return "Error: LLM_API_KEY environment variable not set."
+        if isinstance(sales_data, str) and sales_data.startswith("Error:"):
+            return sales_data
+        
+        try:
             messages = [
                 {
                     "role": "system",
-                    "content": "You are a business analyst. Provide a concise summary of today's key sales metrics."
+                    "content": "You are a senior business analyst for a B2B SaaS company. Your task is to provide a concise, professional summary of daily sales performance. The summary should be written in a professional tone, focus on key metrics, and use bullet points for clarity. Highlight positive or negative trends and provide actionable insights. The summary should not exceed 50 words."
                 },
                 {
                     "role": "user",
-                    "content": f"Data: {sales_data}"
+                    "content": f"Today's Sales Data: {sales_data}"
                 }
             ]
 
@@ -49,10 +58,6 @@ class SalesAgent:
             )
             
             summary = chat_completion.choices[0].message.content.strip()
-
             return summary
-
-        except requests.exceptions.RequestException as e:
-            return f"Error: Could not retrieve data from sales API. Details: {e}"
         except Exception as e:
             return f"Error: An unexpected error occurred in SalesAgent. Details: {e}"

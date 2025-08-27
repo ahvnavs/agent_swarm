@@ -56,12 +56,19 @@ class ReportingAgent:
         doc.build(story)
         print(f"Generated PDF report: {filename}")
 
-    def create_excel_report(self, sales_data=None, marketing_data=None):
-        """Creates an Excel file with placeholder metrics."""
+    def create_excel_report(self, sales_data, marketing_data):
+        """Creates an Excel file with actual metrics."""
         filename = os.path.join(self.report_dir, "company_data.xlsx")
+        
+        # Check for errors and provide a fallback if needed
+        sales_revenue = sales_data.get('total_revenue') if isinstance(sales_data, dict) else 0
+        sales_customers = sales_data.get('new_customers') if isinstance(sales_data, dict) else 0
+        marketing_spend = marketing_data.get('ad_spend') if isinstance(marketing_data, dict) else 0
+        marketing_impressions = marketing_data.get('impressions') if isinstance(marketing_data, dict) else 0
+
         data = {
             'Metric': ['Revenue', 'New Customers', 'Ad Spend', 'Impressions'],
-            'Value': [0, 0, 0, 0],  # Placeholder values
+            'Value': [sales_revenue, sales_customers, marketing_spend, marketing_impressions],
             'Date': [self.today_date, self.today_date, self.today_date, self.today_date]
         }
         df = pd.DataFrame(data)
