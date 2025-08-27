@@ -4,6 +4,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 import openpyxl
 import pandas as pd
+import os
 
 class ReportingAgent:
     """
