@@ -1,0 +1,89 @@
+Agent Swarm: Daily Company Performance Report System
+
+The Agent Swarm is a multi-agent system designed to automate the generation of daily company performance reports. It leverages a microservice architecture, a series of specialized AI agents, and a robust Dockerized environment to compile, analyze, and deliver a detailed report every morning.
+This project demonstrates a clean, production-standard approach to building an agentic system that integrates with external APIs and a large language model (LLM) to perform complex, scheduled tasks.
+______________________________________________________________________________________________
+Features
+
+Microservice Architecture: Two independent FastAPI microservices (sales-api and marketing-api) simulate real-world data sources.
+Specialized Agents: Three Python agents work together to execute the reporting workflow:
+SalesAgent: Fetches sales data and generates a detailed summary.
+MarketingAgent: Fetches marketing data and generates a detailed summary.
+ReportingAgent: The orchestrator that synthesizes data and creates the final reports.
+
+LLM Integration: Uses the Llama 3 8B model via the Groq API to produce high-quality, industry-standard text summaries.
+Multiple Report Formats: Generates a text file, a professional PDF, and an Excel file with key metrics.
+Scheduled Execution: A cron job within the Docker container automates the report generation process every day at 9 AM.
+Robust & Containerized: The entire system is containerized with Docker, ensuring portability, consistency, and easy deployment across different environments.
+Secure: Sensitive information, like API keys and email credentials, are handled securely using a .env file and Docker's environment variable management.
+______________________________________________________________________________________________
+
+Project Architecture
+The system's architecture is built on a microservices and multi-agent model.
+Data Microservices: Two independent FastAPI applications (sales-api and marketing-api) serve as mock data sources, running on ports 8001 and 8002 respectively.
+Reporting System: This is the core of the project. A single Docker container houses three Python agents and a cron scheduler.
+The main.py script acts as the orchestrator.
+SalesAgent and MarketingAgent fetch data from the microservices.
+These agents then use the Groq API to generate detailed summaries.
+Final Report Generation: The ReportingAgent receives the individual summaries, synthesizes them into a final executive summary using the LLM, and creates the final reports in a shared reports/ directory.
+Scheduled Workflow: A cron job runs main.py every morning, kicking off the entire workflow automatically.
+______________________________________________________________________________________________
+
+Project Structure
+The project has a clear, organized directory structure to separate concerns and ensure maintainability.
+
+.
+├── docker-compose.yml
+├── .gitignore
+├── sales-api/
+│   ├── Dockerfile
+│   ├── main.py
+│   └── requirements.txt
+├── marketing-api/
+│   ├── Dockerfile
+│   ├── main.py
+│   └── requirements.txt
+└── reporting-system/
+    ├── Dockerfile
+    ├── main.py
+    ├── requirements.txt
+    ├── cron_script.sh
+    ├── .env
+    ├── agents/
+    │   ├── sales_agent.py
+    │   ├── marketing_agent.py
+    │   └── reporting_agent.py
+    └── reports/
+______________________________________________________________________________________________
+Getting Started
+Prerequisites
+Docker and Docker Compose installed on your system.
+A Groq API Key for the LLM. You can get a free one from Groq's website.
+Email credentials (sender, password, and recipient) to enable email functionality. If using Gmail, use an App Password.
+
+Step 1: Clone the Repository
+Clone the project to your local machine:
+git clone https://github.com/ahvnavs/agent_swarm.git
+cd agent_swarm
+
+Step 2: Configure Environment Variables
+Navigate to the reporting-system directory and create a .env file with your credentials.
+cd reporting-system
+touch .env
+Open the .env file and add your keys, making sure to replace the placeholders:
+LLM_API_KEY="gsk_your_actual_groq_key_here"
+EMAIL_SENDER="your-email@gmail.com"
+EMAIL_PASSWORD="your-app-password"
+EMAIL_RECIPIENT="recipient-email@example.com"
+
+Step 3: Build and Run the Containers
+From the root directory of your project (where docker-compose.yml is located), build and start all three services:
+docker-compose up --build -d
+This command builds the Docker images for all three services and runs them in the background.
+
+Step 4: Verify the System
+To check if the containers are running:
+docker-compose ps
+To manually trigger the report generation script and test the entire workflow immediately, run the following command:
+docker-compose exec reporting-system python3 /app/main.py
+This will generate the reports and, if configured correctly, send them via email. You can check the reporting-system/reports directory on your local machine for the generated files.
