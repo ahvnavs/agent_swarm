@@ -1,4 +1,3 @@
-# sales-api/main.py
 import json
 import random
 from fastapi import FastAPI
@@ -18,10 +17,3 @@ def get_sales_data():
         "conversion_rate_percent": round(random.uniform(2.5, 7.5), 2),
     }
     return data
-
-```
-
-```text
-# sales-api/requirements.txt
-fastapi==0.111.0
-uvicorn[standard]==0.30.1

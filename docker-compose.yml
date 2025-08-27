@@ -25,5 +25,8 @@ services:
       - marketing-api
     volumes:
       - ./reporting-system/reports:/app/reports
-
     command: tail -f /dev/null
+    deploy:
+      resources:
+        limits:
+          memory: 16G

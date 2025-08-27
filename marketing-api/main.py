@@ -1,4 +1,3 @@
-# marketing-api/main.py
 import json
 import random
 from fastapi import FastAPI
@@ -19,10 +18,3 @@ def get_marketing_data():
         "traffic_source": random.choice(["Google Ads", "Social Media", "Email Campaigns"]),
     }
     return data
-
-```
-
-```text
-# marketing-api/requirements.txt
-fastapi==0.111.0
-uvicorn[standard]==0.30.1
