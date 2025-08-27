@@ -1,15 +1,24 @@
 import requests
 import os
-from huggingface_hub import InferenceClient
+from groq import Groq
 
 class MarketingAgent:
     """
-    An agent to fetch marketing data and generate a summary using Hugging Face Inference API.
+    An agent to fetch marketing data and generate a summary using Groq's LLM API.
     """
     def __init__(self):
         self.api_url = "http://marketing-api:8000/marketing"
         self.api_key = os.environ.get("LLM_API_KEY")
-        self.client = InferenceClient(model="mistralai/Mistral-7B-Instruct-v0.2", token=self.api_key)
+
+        # Explicitly remove proxy environment variables before client initialization.
+        # This fixes the "unexpected keyword argument 'proxies'" error.
+        if "http_proxy" in os.environ:
+            del os.environ["http_proxy"]
+        if "https_proxy" in os.environ:
+            del os.environ["https_proxy"]
+
+        self.client = Groq(api_key=self.api_key)
+        self.model_name = "mixtral-8x7b-32768"
 
     def get_summary(self):
         """Fetches marketing data and generates a summary."""
@@ -20,20 +29,29 @@ class MarketingAgent:
             response = requests.get(self.api_url)
             response.raise_for_status()
             marketing_data = response.json()
-            
-            prompt_data = (
-                f"You are a marketing analyst. Based on the following data, "
-                f"provide a concise summary of today's key marketing campaign metrics.\n\n"
-                f"Data: {marketing_data}\n\n"
-                f"Summary:"
+
+            messages = [
+                {
+                    "role": "system",
+                    "content": "You are a marketing analyst. Provide a concise summary of today's key marketing campaign metrics."
+                },
+                {
+                    "role": "user",
+                    "content": f"Data: {marketing_data}"
+                }
+            ]
+
+            chat_completion = self.client.chat.completions.create(
+                messages=messages,
+                model=self.model_name,
+                temperature=0.7,
+                max_tokens=256
             )
             
-            summary_response = self.client.text_generation(prompt_data, max_new_tokens=256)
-            
-            summary = summary_response.replace(prompt_data, "").strip()
-            
+            summary = chat_completion.choices[0].message.content.strip()
+
             return summary
-            
+
         except requests.exceptions.RequestException as e:
             return f"Error: Could not retrieve data from marketing API. Details: {e}"
         except Exception as e:
