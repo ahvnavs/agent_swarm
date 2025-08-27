@@ -18,11 +18,9 @@ def run_report_generation():
     marketing_agent = MarketingAgent()
     reporting_agent = ReportingAgent()
     
-    # Store the raw data from the API calls
     sales_data = sales_agent.get_data()
     marketing_data = marketing_agent.get_data()
     
-    # Generate summaries using the raw data
     sales_summary = sales_agent.get_summary(sales_data)
     marketing_summary = marketing_agent.get_summary(marketing_data)
     
@@ -36,10 +34,16 @@ def run_report_generation():
     if isinstance(marketing_summary, str) and marketing_summary.startswith("Error:"):
         print(f"Warning: Marketing agent failed. {marketing_summary}")
         final_marketing_summary = f"Error fetching marketing data. Reason: {marketing_summary.split(':', 1)[1].strip()}"
-        
-    reporting_agent.create_text_report(final_sales_summary, final_marketing_summary)
-    reporting_agent.create_pdf_report(final_sales_summary, final_marketing_summary)
-    reporting_agent.create_excel_report(sales_data, marketing_data)
+    
+    combined_summary = reporting_agent.create_combined_summary(final_sales_summary, final_marketing_summary)
+    
+    # Store the filenames returned by the creation methods
+    text_file = reporting_agent.create_text_report(final_sales_summary, final_marketing_summary)
+    pdf_file = reporting_agent.create_pdf_report(final_sales_summary, final_marketing_summary, combined_summary)
+    excel_file = reporting_agent.create_excel_report(sales_data, marketing_data)
+    
+    # New: Send the email with the generated reports
+    reporting_agent.send_email_with_reports(pdf_file, excel_file)
     
     print(f"[{datetime.now()}] Daily report generation complete.")
 
