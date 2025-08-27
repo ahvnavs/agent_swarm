@@ -1,0 +1,10 @@
+# .gitignore
+# Environment files
+.env
+# Generated reports
+/reporting-system/reports/
+# Python cache files
+__pycache__/
+*.pyc
+# Docker-specific files
+.dockerignore
