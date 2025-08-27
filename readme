@@ -1,11 +1,13 @@
-Agent Swarm: Daily Company Performance Report System
+🚀 Agent Swarm: Daily Company Performance Report System
 
 The Agent Swarm is a multi-agent system designed to automate the generation of daily company performance reports. It leverages a microservice architecture, a series of specialized AI agents, and a robust Dockerized environment to compile, analyze, and deliver a detailed report every morning.
 This project demonstrates a clean, production-standard approach to building an agentic system that integrates with external APIs and a large language model (LLM) to perform complex, scheduled tasks.
-______________________________________________________________________________________________
-Features
+
+
+✨ Features
 
 Microservice Architecture: Two independent FastAPI microservices (sales-api and marketing-api) simulate real-world data sources.
+
 Specialized Agents: Three Python agents work together to execute the reporting workflow:
 SalesAgent: Fetches sales data and generates a detailed summary.
 MarketingAgent: Fetches marketing data and generates a detailed summary.
@@ -16,20 +18,27 @@ Multiple Report Formats: Generates a text file, a professional PDF, and an Excel
 Scheduled Execution: A cron job within the Docker container automates the report generation process every day at 9 AM.
 Robust & Containerized: The entire system is containerized with Docker, ensuring portability, consistency, and easy deployment across different environments.
 Secure: Sensitive information, like API keys and email credentials, are handled securely using a .env file and Docker's environment variable management.
-______________________________________________________________________________________________
 
-Project Architecture
+
+
+🏗️ Project Architecture
+
 The system's architecture is built on a microservices and multi-agent model.
+
 Data Microservices: Two independent FastAPI applications (sales-api and marketing-api) serve as mock data sources, running on ports 8001 and 8002 respectively.
+
 Reporting System: This is the core of the project. A single Docker container houses three Python agents and a cron scheduler.
 The main.py script acts as the orchestrator.
 SalesAgent and MarketingAgent fetch data from the microservices.
 These agents then use the Groq API to generate detailed summaries.
-Final Report Generation: The ReportingAgent receives the individual summaries, synthesizes them into a final executive summary using the LLM, and creates the final reports in a shared reports/ directory.
-Scheduled Workflow: A cron job runs main.py every morning, kicking off the entire workflow automatically.
-______________________________________________________________________________________________
 
-Project Structure
+Final Report Generation: The ReportingAgent receives the individual summaries, synthesizes them into a final executive summary using the LLM, and creates the final reports in a shared reports/ directory.
+
+Scheduled Workflow: A cron job runs main.py every morning, kicking off the entire workflow automatically.
+
+
+📁 Project Structure
+
 The project has a clear, organized directory structure to separate concerns and ensure maintainability.
 
 .
@@ -54,36 +63,69 @@ The project has a clear, organized directory structure to separate concerns and 
     │   ├── marketing_agent.py
     │   └── reporting_agent.py
     └── reports/
-______________________________________________________________________________________________
-Getting Started
+
+
+🛠️ Getting Started
+
 Prerequisites
 Docker and Docker Compose installed on your system.
 A Groq API Key for the LLM. You can get a free one from Groq's website.
 Email credentials (sender, password, and recipient) to enable email functionality. If using Gmail, use an App Password.
 
-Step 1: Clone the Repository
-Clone the project to your local machine:
+Step 1: Clone the RepositoryClone the project to your local machine:
 git clone https://github.com/ahvnavs/agent_swarm.git
 cd agent_swarm
 
-Step 2: Configure Environment Variables
-Navigate to the reporting-system directory and create a .env file with your credentials.
+Step 2: Configure Environment VariablesNavigate to the reporting-system directory and create a .env file with your credentials.
+
 cd reporting-system
 touch .env
-Open the .env file and add your keys, making sure to replace the placeholders:
-LLM_API_KEY="gsk_your_actual_groq_key_here"
+
+Open the .env file and add your keys, making sure to replace the placeholders:LLM_API_KEY="gsk_your_actual_groq_key_here"
 EMAIL_SENDER="your-email@gmail.com"
 EMAIL_PASSWORD="your-app-password"
 EMAIL_RECIPIENT="recipient-email@example.com"
 
-Step 3: Build and Run the Containers
-From the root directory of your project (where docker-compose.yml is located), build and start all three services:
+Step 3: Build and Run the ContainersFrom the root directory of your project (where docker-compose.yml is located), build and start all three services:
+
 docker-compose up --build -d
+
 This command builds the Docker images for all three services and runs them in the background.
 
-Step 4: Verify the System
-To check if the containers are running:
+Step 4: Verify the SystemTo check if the containers are running:
+
 docker-compose ps
+
 To manually trigger the report generation script and test the entire workflow immediately, run the following command:
+
 docker-compose exec reporting-system python3 /app/main.py
+
 This will generate the reports and, if configured correctly, send them via email. You can check the reporting-system/reports directory on your local machine for the generated files.
+
+
+🚀 Future Scope
+
+The project provides a strong foundation for a production-grade system. Here are some ideas for future enhancements:
+
+1. Advanced LLM Integration & Data Flow
+
+Error Recovery:Implement a retry mechanism with exponential backoff for LLM API calls and external data fetches to handle transient network issues and rate limits.
+Structured Output: Utilize the Groq API's JSON mode to force the LLM to return structured data. This would allow the ReportingAgent to parse key insights (e.g., "overall_sentiment", "key_trends") and use them to enrich the final Excel or PDF reports.
+Dynamic Report Content: Use the combined summary from the ReportingAgent to dynamically populate the email body, making it a professional, personalized message for each report.
+
+2. Enhanced Data and Reporting
+
+Real Data Integration: Replace the mock FastAPI microservices with real-world data sources, such as a CRM (Salesforce, HubSpot), marketing analytics platforms (Google Analytics), or SQL databases.
+Additional Metrics: Expand the agents to collect more advanced business metrics, such as Customer Lifetime Value (LTV), Churn Rate, and Return on Ad Spend (ROAS).
+Data Visualization: Incorporate a library like matplotlib or seaborn to generate charts and graphs. These visualizations could then be embedded directly into the PDF report, providing stakeholders with a quick, visual overview of performance.
+
+3. Improved DevOps and Infrastructure
+
+Robust Logging: Implement a more advanced logging system that sends logs to a dedicated file or a centralized service (like Elasticsearch or Grafana) for easier debugging and monitoring.
+Alerting System: Configure the system to send automated alerts (e.g., to a Slack channel or a specific email address) if a critical failure occurs, such as a failed LLM call or a data source being unreachable.
+Advanced Scheduling: Replace the basic cron job with a more robust workflow orchestration tool like Airflow or Kestra. This would provide a web-based UI for monitoring job status, managing dependencies, and retrying failed tasks.
+
+
+👨‍💻 Contributing
+
+This project is open for collaboration and improvements. Feel free to fork the repository, make changes, and open a pull request.
