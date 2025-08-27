@@ -11,6 +11,7 @@ import httpx
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
+from email.mime.text import MIMEText  
 from email import encoders
 
 class ReportingAgent:
@@ -162,7 +163,7 @@ class ReportingAgent:
             "Best regards,\n"
             "The Reporting Agent"
         )
-        message.attach(MIMEText(body, "plain")) # type: ignore
+        message.attach(MIMEText(body, "plain"))
 
         for file_path in [pdf_file, excel_file]:
             if os.path.exists(file_path):

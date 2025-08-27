@@ -42,7 +42,13 @@ class MarketingAgent:
             messages = [
                 {
                     "role": "system",
-                    "content": "You are a senior marketing analyst. Your task is to provide a concise, professional summary of daily marketing campaign performance. The summary should be written in a professional tone, focus on key metrics, and use bullet points for clarity. Highlight positive or negative trends and provide actionable insights. The summary should not exceed 50 words."
+                    "content": (
+                        "You are a senior marketing analyst for a B2B SaaS company. "
+                        "Your task is to provide a comprehensive, industry-standard summary of daily marketing campaign performance. "
+                        "The summary should be detailed and structured with bullet points. "
+                        "Include an analysis of total ad spend, impressions, clicks, campaign success rate, "
+                        "and top traffic sources. Conclude with an overall sentiment on the day's marketing efforts."
+                    )
                 },
                 {
                     "role": "user",
