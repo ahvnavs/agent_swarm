@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  sales-api:
+    build: ./sales-api
+    container_name: sales-api
+    ports:
+      - "8001:8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    restart: always
+
+  marketing-api:
+    build: ./marketing-api
+    container_name: marketing-api
+    ports:
+      - "8002:8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    restart: always
+
+  reporting-system:
+    build: ./reporting-system
+    container_name: reporting-system
+    depends_on:
+      - sales-api
+      - marketing-api
+    volumes:
+      - ./reporting-system/reports:/app/reports
+
+    command: tail -f /dev/null
