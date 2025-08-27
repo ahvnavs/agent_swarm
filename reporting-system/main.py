@@ -5,7 +5,6 @@ from agents.sales_agent import SalesAgent
 from agents.marketing_agent import MarketingAgent
 from agents.reporting_agent import ReportingAgent
 
-# Add the parent directory of 'main.py' to the Python path.
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def run_report_generation():
@@ -37,12 +36,10 @@ def run_report_generation():
     
     combined_summary = reporting_agent.create_combined_summary(final_sales_summary, final_marketing_summary)
     
-    # Store the filenames returned by the creation methods
     text_file = reporting_agent.create_text_report(final_sales_summary, final_marketing_summary)
     pdf_file = reporting_agent.create_pdf_report(final_sales_summary, final_marketing_summary, combined_summary)
     excel_file = reporting_agent.create_excel_report(sales_data, marketing_data)
     
-    # New: Send the email with the generated reports
     reporting_agent.send_email_with_reports(pdf_file, excel_file)
     
     print(f"[{datetime.now()}] Daily report generation complete.")
