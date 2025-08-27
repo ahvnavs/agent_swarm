@@ -1,12 +1,10 @@
 import sys
 import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from datetime import datetime
 from agents.sales_agent import SalesAgent
 from agents.marketing_agent import MarketingAgent
 from agents.reporting_agent import ReportingAgent
-
-# Add the parent directory of 'main.py' to the Python path.
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def run_report_generation():
     """
