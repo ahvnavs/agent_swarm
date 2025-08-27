@@ -56,7 +56,7 @@ class ReportingAgent:
         doc.build(story)
         print(f"Generated PDF report: {filename}")
 
-    def create_excel_report(self):
+    def create_excel_report(self, sales_data=None, marketing_data=None):
         """Creates an Excel file with placeholder metrics."""
         filename = os.path.join(self.report_dir, "company_data.xlsx")
         data = {
